@@ -1,21 +1,37 @@
+import { Route, Switch } from "react-router-dom";
 
-import { Route, Routes } from "react-router-dom";
 import "./App.css";
 import Header from "./layout/Header";
 import Login from "./pages/Login";
 import Signup from "./pages/SignUp";
 import HomePage from "./pages/HomePage";
+import { useSelector } from "react-redux";
+import MailBoxPage from "./pages/MailBoxPage";
+
 function App() {
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
   return (
     <div>
-      <Header/>
-      <Routes>
-        <Route path="/login" element={<Login/>}></Route>
-        <Route path="/signup" element={<Signup/>}></Route>
-        <Route path='/' element={<HomePage/>}></Route>
+      <Header />
+      <Switch>
+        {!isLoggedIn && (
+          <Route path="/login">
+            <Login />
+          </Route>
+        )}
 
-      </Routes>
-    
+        <Route path="/signup" exact>
+          <Signup />
+        </Route>
+        <Route path="/" exact>
+          <HomePage />
+        </Route>
+        {isLoggedIn && (
+          <Route path="/mailbox" exact>
+            <MailBoxPage />
+          </Route>
+        )}
+      </Switch>
     </div>
   );
 }
