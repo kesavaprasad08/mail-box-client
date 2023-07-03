@@ -1,0 +1,12 @@
+.composemail {
+  margin: 50px;
+  border: 0.5px solid peachpuff;
+  border-radius: 5px;
+}
+
+.textArea {
+  margin-bottom: 50px;
+  border: 0.1px solid lightgray ;
+  height: 150px;
+  width: 1200px;
+}
