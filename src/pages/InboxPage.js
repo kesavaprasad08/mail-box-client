@@ -2,13 +2,14 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { mailActions } from "../redux/mail";
-import { Badge, Table, Button } from "react-bootstrap";
+import { Badge, Table, Button, Tabs, Tab } from "react-bootstrap";
 import { useHistory } from "react-router-dom/cjs/react-router-dom";
 
 const InboxPage = () => {
   const dispatch = useDispatch();
   const email = useSelector((state) => state.auth.email);
   const receivedMails = useSelector((state) => state.mail.receivedMails);
+  const sentMails = useSelector((state) => state.mail.sentMails);
   const history = useHistory();
 
   const [readMessagesCount, setReadMessagesCount] = useState(0);
@@ -115,80 +116,149 @@ const InboxPage = () => {
     }
   };
 
+  const handleMailClick = (id) => {
+    const fullMail = sentMails.find((mail) => mail.id === id);
+    history.push({
+      pathname: `/mail/${id}`,
+      state: {
+        from: fullMail.email,
+        subject: fullMail.subject,
+        body: fullMail.body,
+        type: "received",
+      },
+    });
+  };
+  const handleDeleteClick = async (id) => {
+    try {
+      await axios.delete(
+        `https://mail-box-client-3bc7d-default-rtdb.firebaseio.com//${email.replace(
+          /[.@]/g,
+          ""
+        )}/sentMails/${id}.json`
+      );
+      dispatch(mailActions.deleteSentMail(id));
+      console.log("deleted");
+    } catch (error) {
+      alert(error);
+    }
+  };
+
   return (
-    <>
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h6>
-          Received Mails <Badge> {unreadMessagesCount} unread</Badge>
-        </h6>
-        <div>
-          <Badge variant="secondary" className="mr-2"></Badge>
+    <Tabs defaultActiveKey="received" id="inbox-tabs">
+      <Tab eventKey="received" title="Received">
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h6>
+            Received Mails <Badge> {unreadMessagesCount} unread</Badge>
+          </h6>
+          <div>
+            <Badge variant="secondary" className="mr-2"></Badge>
+          </div>
         </div>
-      </div>
-      {receivedMails.length === 0 ? (
-        <p style={{ padding: "1rem" }}>No new Mails</p>
-      ) : (
-        <Table striped bordered hover>
-          <thead>
-            <tr>
-              <th></th>
-              <th>From</th>
-              <th>Subject</th>
-              <th>Body</th>
-            </tr>
-          </thead>
-          <tbody>
-            {receivedMails.map((mail) => (
-              <tr
-                key={mail.id}
-                style={{
-                  cursor: "pointer",
-                }}
-              >
-                <td
-                  onClick={() => {
-                    receivedMailClickHandler(mail.id);
+        {receivedMails.length === 0 ? (
+          <p style={{ padding: "1rem" }}>No new Mails</p>
+        ) : (
+          <Table striped bordered hover>
+            <thead>
+              <tr>
+                <th></th>
+                <th>From</th>
+                <th>Subject</th>
+                <th>Body</th>
+              </tr>
+            </thead>
+            <tbody>
+              {receivedMails.map((mail) => (
+                <tr
+                  key={mail.id}
+                  style={{
+                    cursor: "pointer",
                   }}
                 >
-                  {!mail.isRead && <Badge bg="primary">.</Badge>}
-                </td>
-                <td
-                  onClick={() => {
-                    receivedMailClickHandler(mail.id);
-                  }}
-                >
-                  {mail.email}
-                </td>
-                <td
-                  onClick={() => {
-                    receivedMailClickHandler(mail.id);
-                  }}
-                >
-                  {mail.subject}
-                </td>
-                <td
-                  onClick={() => {
-                    receivedMailClickHandler(mail.id);
-                  }}
-                >
-                  {mail.body}
-                </td>
-                <td>
-                  <Button
-                    variant="danger"
+                  <td
                     onClick={() => {
-                      deleteMailHandler(mail.id);
+                      receivedMailClickHandler(mail.id);
                     }}
                   >
-                    Delete
-                  </Button>
-                </td>
+                    {!mail.isRead && <Badge bg="primary">.</Badge>}
+                  </td>
+                  <td
+                    onClick={() => {
+                      receivedMailClickHandler(mail.id);
+                    }}
+                  >
+                    {mail.email}
+                  </td>
+                  <td
+                    onClick={() => {
+                      receivedMailClickHandler(mail.id);
+                    }}
+                  >
+                    {mail.subject}
+                  </td>
+                  <td
+                    onClick={() => {
+                      receivedMailClickHandler(mail.id);
+                    }}
+                  >
+                    {mail.body}
+                  </td>
+                  <td>
+                    <Button
+                      variant="danger"
+                      onClick={() => {
+                        deleteMailHandler(mail.id);
+                      }}
+                    >
+                      Delete
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        )}
+      </Tab>
+      <Tab eventKey="sent" title="Sent">
+        {sentMails.length === 0 ? (
+          <p style={{ padding: "1rem" }}>No New Mails</p>
+        ) : (
+          <Table striped bordered hover>
+            <thead>
+              <tr>
+                <th>To</th>
+                <th>Subject</th>
+                <th>Body</th>
+                <th> </th>
               </tr>
-            ))}
-          </tbody>
-        </Table>
-      )}
-    </>
+            </thead>
+            <tbody>
+              {sentMails.map((mail) => (
+                <tr
+                  key={mail.id}
+                  style={{
+                    cursor: "pointer",
+                  }}
+                >
+                  <td onClick={() => handleMailClick(mail.id)}>{mail.to}</td>
+                  <td onClick={() => handleMailClick(mail.id)}>
+                    {mail.subject}
+                  </td>
+                  <td onClick={() => handleMailClick(mail.id)}>{mail.body}</td>
+                  <td>
+                    <Button
+                      variant="danger"
+                      onClick={() => handleDeleteClick(mail.id)}
+                    >
+                      Delete Mail
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        )}
+      </Tab>
+    </Tabs>
   );
 };
 

@@ -21,6 +21,10 @@ const mailSlice = createSlice({
     },
     deleteReceivedMail (state,action){
         state.receivedMails = state.receivedMails.filter((mail) =>mail.id !== action.payload);
+    },
+    deleteSentMail (state,action){
+        
+        state.sentMails = state.sentMails.filter((mail) =>mail.id !== action.payload);
     }
   },
 });
