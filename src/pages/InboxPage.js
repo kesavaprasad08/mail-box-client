@@ -11,68 +11,78 @@ const InboxPage = () => {
   const receivedMails = useSelector((state) => state.mail.receivedMails);
   const sentMails = useSelector((state) => state.mail.sentMails);
   const history = useHistory();
+  let [changes,setChanges] =useState(false);
 
   const [readMessagesCount, setReadMessagesCount] = useState(0);
   let unreadMessagesCount = receivedMails.length - readMessagesCount;
   if (unreadMessagesCount < 0) {
     unreadMessagesCount = 0;
   }
-
+  setTimeout(() => {
+    setChanges(!changes);
+  }, 2000);
+ 
   useEffect(() => {
     const getData = async () => {
-      try {
-        await axios
-          .get(
-            `https://mail-box-client-3bc7d-default-rtdb.firebaseio.com//${email.replace(
-              /[.@]/g,
-              ""
-            )}/receivedMails.json`
-          )
-          .then((res) => {
-            let receivedMails = [];
-            if (res.data) {
-              for (const key in res.data) {
-                const mail = {
-                  id: key,
-                  ...res.data[key],
-                };
-                receivedMails.push(mail);
+        console.log('api');
+        try {
+          await axios
+            .get(
+              `https://mail-box-client-3bc7d-default-rtdb.firebaseio.com//${email.replace(
+                /[.@]/g,
+                ""
+              )}/receivedMails.json`
+            )
+            .then((res) => {
+              let receivedMails = [];
+              if (res.data) {
+                for (const key in res.data) {
+                  const mail = {
+                    id: key,
+                    ...res.data[key],
+                  };
+                  receivedMails.push(mail);
+                }
+                dispatch(mailActions.addReceivedMails(receivedMails));
+                const readMails = receivedMails.filter((email) => email.isRead);
+                setReadMessagesCount(readMails.length);
               }
-              dispatch(mailActions.addReceivedMails(receivedMails));
-              const readMails = receivedMails.filter((email) => email.isRead);
-              setReadMessagesCount(readMails.length);
-            }
-          });
-      } catch (error) {
-        alert(error);
-      }
-      try {
-        await axios
-          .get(
-            `https://mail-box-client-3bc7d-default-rtdb.firebaseio.com//${email.replace(
-              /[.@]/g,
-              ""
-            )}/sentMails.json`
-          )
-          .then((res) => {
-            let sentMails = [];
-            if (res.data) {
-              for (const key in res.data) {
-                const mail = {
-                  id: key,
-                  ...res.data[key],
-                };
-                sentMails.push(mail);
+            });
+        } catch (error) {
+          alert(error);
+        }
+        try {
+          await axios
+            .get(
+              `https://mail-box-client-3bc7d-default-rtdb.firebaseio.com//${email.replace(
+                /[.@]/g,
+                ""
+              )}/sentMails.json`
+            )
+            .then((res) => {
+              let sentMails = [];
+              if (res.data) {
+                for (const key in res.data) {
+                  const mail = {
+                    id: key,
+                    ...res.data[key],
+                  };
+                  sentMails.push(mail);
+                }
+                dispatch(mailActions.addSentMails(sentMails));
               }
-              dispatch(mailActions.addSentMails(sentMails));
-            }
-          });
-      } catch (error) {
-        alert(error);
-      }
-    };
+            });
+        } catch (error) {
+          alert(error);
+        }
+      };
     getData();
-  }, [dispatch, email]);
+  }, [dispatch,email,changes]);
+
+//   setInterval(() => {
+//     
+//     //   getData();
+//   },2000)
 
   const receivedMailClickHandler = async (id) => {
     const fullMail = receivedMails.find((mail) => mail.id === id);
@@ -100,7 +110,7 @@ const InboxPage = () => {
       alert(e);
     }
   };
-
+// console.log('hi')
   const deleteMailHandler = async (id) => {
     try {
       await axios.delete(
@@ -142,7 +152,7 @@ const InboxPage = () => {
       alert(error);
     }
   };
-
+//     
   return (
     <Tabs defaultActiveKey="received" id="inbox-tabs">
       <Tab eventKey="received" title="Received">
@@ -228,7 +238,7 @@ const InboxPage = () => {
                 <th>To</th>
                 <th>Subject</th>
                 <th>Body</th>
-                <th> </th>
+                <th>Delete</th>
               </tr>
             </thead>
             <tbody>
