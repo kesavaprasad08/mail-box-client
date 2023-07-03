@@ -18,6 +18,9 @@ const mailSlice = createSlice({
     markMailAsRead(state,action) {
         state.receivedMails= state.receivedMails.map((mail)=>
         mail.id=== action.payload ?{...mail,isRead:true}:mail)
+    },
+    deleteReceivedMail (state,action){
+        state.receivedMails = state.receivedMails.filter((mail) =>mail.id !== action.payload);
     }
   },
 });
