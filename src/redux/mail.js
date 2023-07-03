@@ -15,6 +15,10 @@ const mailSlice = createSlice({
     addReceivedMails(state, action) {
       state.receivedMails = action.payload;
     },
+    markMailAsRead(state,action) {
+        state.receivedMails= state.receivedMails.map((mail)=>
+        mail.id=== action.payload ?{...mail,isRead:true}:mail)
+    }
   },
 });
 

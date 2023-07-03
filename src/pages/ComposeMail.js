@@ -66,7 +66,6 @@ const ComposeEmail = () => {
     setTo("");
     setSubject("");
     setEditorState(EditorState.createEmpty());
-    console.log(body);
   };
 
   return (
