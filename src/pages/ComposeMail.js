@@ -10,6 +10,7 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 
 import axios from "axios";
+import { Link } from "react-router-dom/cjs/react-router-dom";
 
 const ComposeEmail = () => {
   const [to, setTo] = useState("");
@@ -20,8 +21,8 @@ const ComposeEmail = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const content = convertToRaw(editorState.getCurrentContent());
-    const body = JSON.stringify(content);
-    console.log("email = ", email);
+    const body = JSON.stringify(content.blocks[0].text);
+    
     axios
       .post(
         `https://mail-box-client-3bc7d-default-rtdb.firebaseio.com//${email.replace(
@@ -69,12 +70,13 @@ const ComposeEmail = () => {
   };
 
   return (
+    
     <div style={{ padding: "1rem" }}>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
         <h2>Compose Email</h2>
-        <a href="/welcome">
+        <Link to="/mailbox">
           <Button>Back to homepage</Button>
-        </a>
+        </Link>
       </div>
       <Form onSubmit={handleSubmit} style={{ padding: "1rem" }}>
         <Form.Group controlId="to">

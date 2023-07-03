@@ -19,6 +19,7 @@ dispatch(authActions.logout());
         {!isLoggedIn && <NavLink className={" mx-3 "}  to={"./signup"}>Sign Up</NavLink>}
           {!isLoggedIn && <NavLink className={" mx-3 "}  to={"./login"}>Login</NavLink>}
           {isLoggedIn && <NavLink className={" mx-3 "}  to={"./composeemail"}><Button>Compose Email</Button></NavLink>}
+          {isLoggedIn && <NavLink className={" mx-3 "}  to={"./inbox"}><Button>Inbox</Button></NavLink>}
           {isLoggedIn && <Button onClick={logoutHandler}>Logout</Button>}
         </Nav>
       </Container>

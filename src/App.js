@@ -8,6 +8,7 @@ import HomePage from "./pages/HomePage";
 import { useSelector } from "react-redux";
 import MailBoxPage from "./pages/MailBoxPage";
 import ComposeMailPage from "./pages/ComposeMail";
+import InboxPage from "./pages/InboxPage";
 
 function App() {
   const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
@@ -35,6 +36,11 @@ function App() {
         {isLoggedIn && (
           <Route path="/composeemail" exact>
             <ComposeMailPage />
+          </Route>
+        )}
+        {isLoggedIn && (
+          <Route path="/inbox" exact>
+            <InboxPage />
           </Route>
         )}
       </Switch>
