@@ -1,9 +1,10 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { mailActions } from "../redux/mail";
 import { Badge, Table, Button, Tabs, Tab } from "react-bootstrap";
 import { useHistory } from "react-router-dom/cjs/react-router-dom";
+import useFetch from "../hooks/use-fetch";
 
 const InboxPage = () => {
   const dispatch = useDispatch();
@@ -22,65 +23,47 @@ const InboxPage = () => {
     setChanges(!changes);
   }, 2000);
 
+  const [receivedMailData] = useFetch(
+    `https://mail-box-client-3bc7d-default-rtdb.firebaseio.com//${email.replace(
+      /[.@]/g,
+      ""
+    )}/receivedMails.json`,
+    changes
+  );
+
+  const [sentMailData] = useFetch(
+    `https://mail-box-client-3bc7d-default-rtdb.firebaseio.com//${email.replace(
+      /[.@]/g,
+      ""
+    )}/sentMails.json`
+  );
+
   useEffect(() => {
-    const getData = async () => {
-      try {
-        await axios
-          .get(
-            `https://mail-box-client-3bc7d-default-rtdb.firebaseio.com//${email.replace(
-              /[.@]/g,
-              ""
-            )}/receivedMails.json`
-          )
-          .then((res) => {
-            let receivedMails = [];
-            if (res.data) {
-              for (const key in res.data) {
-                const mail = {
-                  id: key,
-                  ...res.data[key],
-                };
-                receivedMails.push(mail);
-              }
-              dispatch(mailActions.addReceivedMails(receivedMails));
-              const readMails = receivedMails.filter((email) => email.isRead);
-              setReadMessagesCount(readMails.length);
-            }
-          });
-      } catch (error) {
-        alert(error);
-      }
-      try {
-        await axios
-          .get(
-            `https://mail-box-client-3bc7d-default-rtdb.firebaseio.com//${email.replace(
-              /[.@]/g,
-              ""
-            )}/sentMails.json`
-          )
-          .then((res) => {
-            let sentMails = [];
-            if (res.data) {
-              for (const key in res.data) {
-                const mail = {
-                  id: key,
-                  ...res.data[key],
-                };
-                sentMails.push(mail);
-              }
-              dispatch(mailActions.addSentMails(sentMails));
-            }
-          });
-      } catch (error) {
-        alert(error);
-      }
-    };
-    getData();
-  }, [dispatch, email, changes]);
+    let receivedMessages = [];
+    for (const key in receivedMailData) {
+      const mail = {
+        id: key,
+        ...receivedMailData[key],
+      };
+      receivedMessages.push(mail);
+    }
+    dispatch(mailActions.addReceivedMails(receivedMessages));
+    const readMails = receivedMessages.filter((email) => email.isRead);
+    setReadMessagesCount(readMails.length);
+
+    let sentMessages = [];
+    for (const key in sentMailData) {
+      const mail = {
+        id: key,
+        ...sentMailData[key],
+      };
+      sentMessages.push(mail);
+    }
+    dispatch(mailActions.addSentMails(sentMessages));
+  }, [receivedMailData, sentMailData, dispatch]);
 
   const receivedMailClickHandler = async (id) => {
     const fullMail = receivedMails.find((mail) => mail.id === id);
-    console.log(fullMail);
     try {
       await axios.put(
         `https://mail-box-client-3bc7d-default-rtdb.firebaseio.com//${email.replace(
