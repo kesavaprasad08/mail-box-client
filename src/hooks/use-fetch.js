@@ -10,7 +10,7 @@ const useFetch = (url,changes) => {
         const data = await response.data;
         setData(data);
       } catch (err) {
-        alert(err);
+        // alert(err);
       }
     };
     getData();

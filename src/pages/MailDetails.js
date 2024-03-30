@@ -2,9 +2,11 @@ import React from "react";
 import { Button } from "react-bootstrap";
 import { useLocation, useHistory } from "react-router-dom/cjs/react-router-dom";
 
-const MailDetails = () => {
+const MailDetails = (props) => {
+  
     const location = useLocation();
   const history = useHistory();
+  console.log(location.state)
   const { to, from, subject, body, type } = location.state;
     return<>
     <div style={{ padding: "20px", backgroundColor: "#f5f5f5" }}>

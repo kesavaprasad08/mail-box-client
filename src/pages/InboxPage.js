@@ -77,6 +77,7 @@ const InboxPage = () => {
       history.push({
         pathname: `/mail/${id}`,
         state: {
+          
           from: fullMail.email,
           subject: fullMail.subject,
           body: fullMail.body,
