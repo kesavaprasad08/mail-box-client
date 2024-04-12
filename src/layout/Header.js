@@ -12,14 +12,14 @@ const Header = () => {
 dispatch(authActions.logout());
   }
   return (
-    <Navbar>
+    <Navbar className={"bg-danger"}>
       <Container>
         <Navbar.Brand>Mail Box</Navbar.Brand>
         <Nav> 
-        {!isLoggedIn && <NavLink className={" mx-3 "}  to={"./signup"}>Sign Up</NavLink>}
-          {!isLoggedIn && <NavLink className={" mx-3 "}  to={"./login"}>Login</NavLink>}
-          {isLoggedIn && <NavLink className={" mx-3 "}  to={"./composeemail"}><Button>Compose Email</Button></NavLink>}
-          {isLoggedIn && <NavLink className={" mx-3 "}  to={"./inbox"}><Button>Inbox</Button></NavLink>}
+        {!isLoggedIn && <NavLink className={"  "}  to={"./signup"}><p>Sign Up </p></NavLink>}
+          {!isLoggedIn && <NavLink className={"  "}  to={"./login"}>Login</NavLink>}
+          {isLoggedIn && <NavLink className={"  "}  to={"./composeemail"}><Button>Compose Email</Button></NavLink>}
+          {isLoggedIn && <NavLink className={" mx-1 "}  to={"./inbox"}><Button>Inbox</Button></NavLink>}
           {isLoggedIn && <Button onClick={logoutHandler}>Logout</Button>}
         </Nav>
       </Container>
